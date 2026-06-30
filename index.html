@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Psicología del Adolescente - parcial</title>
+<style>
+  .site-footer {
+    margin: 22px auto 8px;
+    max-width: 1240px;
+    padding: 16px 18px 26px;
+    text-align: center;
+    color: #6c6253;
+    font-size: .92rem;
+    letter-spacing: .02em;
+  }
+  :root{
+    --bg:#0f1116; --panel:#171a23; --panel2:#1f2330; --border:#2b3040;
+    --text:#e8e9ee; --muted:#9aa0b4; --accent:#7c5cff; --accent2:#37c9c1;
+    --good:#3ddc84; --bad:#ff5d6c; --warn:#ffb648;
+  }
+  body.light{
+    --bg:#f4f5f9; --panel:#ffffff; --panel2:#eef0f7; --border:#dde1ee;
+    --text:#1b1e27; --muted:#5b6072; --accent:#5b3df0; --accent2:#119c95;
+    --good:#1ea860; --bad:#d23c4c; --warn:#c9831b;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    background:var(--bg); color:var(--text); transition:background .3s,color .3s;
+    padding-bottom:60px;
+  }
+  header{
+    position:sticky; top:0; z-index:50; background:var(--panel);
+    border-bottom:1px solid var(--border); padding:14px 18px;
+    display:flex; flex-direction:column; gap:10px;
+  }
+  .headtop{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;}
+  h1{font-size:1.15rem; margin:0; background:linear-gradient(90deg,var(--accent),var(--accent2));
+     -webkit-background-clip:text; background-clip:text; color:transparent;}
+  .btns{display:flex; gap:8px; flex-wrap:wrap;}
+  button{
+    cursor:pointer; border:1px solid var(--border); background:var(--panel2);
+    color:var(--text); padding:8px 12px; border-radius:8px; font-size:.85rem;
+    transition:.2s;
+  }
+  button:hover{border-color:var(--accent);}
+  .progress-wrap{height:8px; background:var(--panel2); border-radius:6px; overflow:hidden;}
+  .progress-bar{height:100%; width:0%; background:linear-gradient(90deg,var(--accent),var(--accent2)); transition:width .3s;}
+  .stats{display:flex; gap:16px; font-size:.8rem; color:var(--muted); flex-wrap:wrap;}
+  .stats b{color:var(--text);}
+  nav.blocknav{display:flex; gap:6px; overflow-x:auto; padding-bottom:2px;}
+  nav.blocknav button{white-space:nowrap; font-size:.75rem; padding:6px 10px;}
+  nav.blocknav button.active{background:var(--accent); color:#fff; border-color:var(--accent);}
+  main{max-width:780px; margin:24px auto; padding:0 16px;}
+  .block-title{
+    font-size:1rem; color:var(--accent2); margin:30px 0 14px; padding-bottom:6px;
+    border-bottom:2px solid var(--border); font-weight:700;
+  }
+  .qcard{
+    background:var(--panel); border:1px solid var(--border); border-radius:14px;
+    padding:18px; margin-bottom:16px;
+  }
+  .qnum{font-size:.75rem; color:var(--muted); margin-bottom:6px;}
+  .qtext{font-size:1rem; margin-bottom:14px; line-height:1.45;}
+  .opt{
+    display:block; width:100%; text-align:left; padding:11px 14px; margin-bottom:8px;
+    border-radius:10px; border:1px solid var(--border); background:var(--panel2);
+    color:var(--text); font-size:.92rem; transition:.15s;
+  }
+  .opt:hover:not(:disabled){border-color:var(--accent);}
+  .opt.correct{background:rgba(61,220,132,.18); border-color:var(--good); color:var(--good);}
+  .opt.incorrect{background:rgba(255,93,108,.18); border-color:var(--bad); color:var(--bad);}
+  .opt:disabled{cursor:default;}
+  .explain{
+    margin-top:10px; font-size:.85rem; padding:10px 12px; border-radius:8px;
+    background:var(--panel2); color:var(--muted); border-left:3px solid var(--accent2);
+    display:none;
+  }
+  .explain.show{display:block;}
+  footer.bar{
+    position:fixed; bottom:0; left:0; right:0; background:var(--panel);
+    border-top:1px solid var(--border); padding:10px 18px; display:flex;
+    justify-content:space-between; align-items:center; font-size:.8rem; color:var(--muted);
+  }
+  .badge{
+    display:inline-block; padding:2px 8px; border-radius:20px; font-size:.7rem;
+    background:var(--panel2); border:1px solid var(--border); margin-left:6px;
+  }
+  #score-final{
+    text-align:center; padding:30px 16px; display:none; background:var(--panel);
+    border:1px solid var(--border); border-radius:14px; margin:24px 0;
+  }
+  #score-final h2{color:var(--accent2);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="headtop">
+    <h1>🥑 Psicología del Adolescente - Guía</h1>
+    <div class="btns">
+      <button id="toggleTheme">🌙 / ☀️</button>
+      <button id="restartBtn">🔄 Reiniciar</button>
+    </div>
+  </div>
+  <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+  <div class="stats">
+    <span>Progreso: <b id="answeredCount">0</b>/<b id="totalCount">0</b></span>
+    <span>Correctas: <b id="correctCount" style="color:var(--good)">0</b></span>
+    <span>Incorrectas: <b id="incorrectCount" style="color:var(--bad)">0</b></span>
+  </div>
+  <nav class="blocknav" id="blockNav"></nav>
+</header>
+
+<main id="main"></main>
+
+<footer class="bar">
+  <span>Guía parcial ·  Tu progreso se guarda automáticamente</span>
+  <span id="footerPct">0%</span>
+</footer>
+
+<script>
+const STORAGE_KEY = "quizAdolescenciaDesarrolloFisico_v1";
+
+const data = [
+{block:"Naturaleza de los cambios y pensamiento (Piaget / Elkind)", questions:[
+ {q:"¿Cuál de los siguientes NO forma parte de los siete aspectos de la 'Naturaleza de los cambios' en la adolescencia?",
+  opts:["Búsqueda de independencia","Cambios hormonales","Pérdida total de la identidad","Cambios físicos y corporales"], correct:2,
+  exp:"Las notas mencionan 'afianzamiento de la identidad', no su pérdida."},
+ {q:"Según Piaget, el pensamiento en la adolescencia se caracteriza por ser:",
+  opts:["Sensoriomotor","Hipotético-deductivo, abstracto y concreto","Mágico e irracional","Exclusivamente intuitivo"], correct:1,
+  exp:"Piaget describe el pensamiento hipotético-deductivo, abstracto y concreto, con razonamiento de operaciones formales."},
+ {q:"La etapa cognitiva que Piaget asocia a la adolescencia, según el pizarrón, es:",
+  opts:["Preoperacional","Operaciones concretas","Operaciones formales","Etapa sensoriomotora"], correct:2,
+  exp:"Las notas señalan 'Operaciones Formales. Resolución de Problemas' como parte del pensamiento de Piaget."},
+ {q:"¿Qué autor describe la 'audiencia imaginaria' y la 'fábula personal'?",
+  opts:["Sigmund Freud","Jean Piaget","David Elkind","Erick Erikson"], correct:2,
+  exp:"El pizarrón atribuye 'Audiencia Imaginaria, Fábula Personal y Vulnerabilidad' al pensamiento de Elkind."},
+ {q:"¿Cuál de las siguientes características pertenece al pensamiento de Elkind y no al de Piaget?",
+  opts:["Operaciones formales","Pensamiento hipotético-deductivo","Resolución de problemas","Indecisión"], correct:3,
+  exp:"La indecisión es parte de las características descritas para Elkind; las otras tres corresponden a Piaget."},
+ {q:"La 'tendencia a discutir' y la 'hipocresía aparente' son descritas como parte del pensamiento de:",
+  opts:["Aristóteles","Kohlberg","Elkind","Piaget"], correct:2,
+  exp:"Ambas aparecen en la lista de rasgos del pensamiento de Elkind en el pizarrón."}
+]},
+{block:"¿Qué es la pubertad? y desarrollo físico en el adolescente", questions:[
+ {q:"La pubertad se caracteriza principalmente por:",
+  opts:["El aislamiento social","La pérdida de identidad","El comienzo de cambios físicos","La finalización del crecimiento"], correct:2,
+  exp:"El pizarrón define la pubertad como el comienzo de cambios físicos."},
+ {q:"Según las notas, ¿en qué rango de edad inicia la pubertad en las niñas?",
+  opts:["5 a 7 años","15 a 18 años","8 a 13 años","20 a 21 años"], correct:2,
+  exp:"Las notas indican 'Niñas de 8-13 años'."},
+ {q:"¿En qué rango de edad inicia la pubertad en los niños, según el pizarrón?",
+  opts:["9 a 14 años","16 a 19 años","5 a 8 años","21 a 25 años"], correct:0,
+  exp:"Las notas indican 'Niños de 9-14 años'."},
+ {q:"Según el pizarrón, los cambios físicos se notan especialmente alrededor de los:",
+  opts:["6 años","18 años","21 años","12 años"], correct:3,
+  exp:"Se anota 'los físicos se notan a los 12 años'."},
+ {q:"La hormona mencionada en el pizarrón que regula el inicio de la producción de hormonas sexuales es la:",
+  opts:["Insulina","Melatonina","Luteinizante","Tiroidea"], correct:2,
+  exp:"El pizarrón destaca la hormona 'Luteinizante' en rojo."},
+ {q:"Según las notas, las gónadas responden a las hormonas:",
+  opts:["Adrenalina/Cortisol","LH/FSH","TSH/ACTH","Insulina/Glucagón"], correct:1,
+  exp:"Se indica que 'las gónadas responden a la LH/FSH', iniciando la producción de hormonas sexuales."}
+]},
+{block:"Características sexuales primarias y secundarias", questions:[
+ {q:"Las características sexuales primarias en la mujer son de tipo:",
+  opts:["Externo","Mixto","Interno","No especificado"], correct:2,
+  exp:"El pizarrón clasifica las primarias femeninas como '(Interno)'."},
+ {q:"¿Cuál de los siguientes es un componente de las características sexuales primarias femeninas?",
+  opts:["Ovarios","Voz más grave","Hombros anchos","Vello facial"], correct:0,
+  exp:"Los ovarios forman parte de los componentes primarios femeninos junto con trompa de Falopio, útero, cuello uterino y vagina."},
+ {q:"En los hombres, ¿cuál es un componente de las características sexuales primarias (internas)?",
+  opts:["Cadera ancha","Próstata","Útero","Vagina"], correct:1,
+  exp:"La próstata aparece junto con crecimiento de testículos, vesículas seminales y conductos deferentes."},
+ {q:"¿Cuál de los siguientes pertenece a las características sexuales secundarias masculinas?",
+  opts:["Trompa de Falopio","Cuello uterino","Crecimiento de la barba","Útero"], correct:2,
+  exp:"Las secundarias masculinas incluyen voz más grave, crecimiento de barba, vello corporal abundante, músculos desarrollados y maduración genital."},
+ {q:"Los 'conductos deferentes' forman parte de las características sexuales:",
+  opts:["Primarias masculinas","Secundarias femeninas","Primarias femeninas","Secundarias masculinas"], correct:0,
+  exp:"Aparecen junto a crecimiento de testículos, próstata y vesículas seminales como características primarias masculinas."},
+ {q:"El 'crecimiento de los testículos' se clasifica como característica sexual:",
+  opts:["Ambiental","Terciaria","Secundaria en la mujer","Primaria (interna) en el hombre"], correct:3,
+  exp:"El pizarrón lo ubica como parte de las características sexuales primarias masculinas."}
+]},
+{block:"Proceso hormonal: espermarquia, menarquia, gonadarquia y adrenarquia", questions:[
+ {q:"La espermarquia se define como:",
+  opts:["La liberación de hormonas suprarrenales","La maduración de las gónadas","La primera menstruación","La producción de espermas"], correct:3,
+  exp:"El pizarrón define espermarquia como 'producción de espermas'."},
+ {q:"La menarquia corresponde a:",
+  opts:["La primera eyaculación","La primera menstruación","El crecimiento de vello púbico","La maduración testicular"], correct:1,
+  exp:"Las notas la definen como '1ª menstruación'."},
+ {q:"La adrenarquia se refiere a:",
+  opts:["El crecimiento de los testículos","La producción de espermas","La primera menstruación","La liberación de hormonas sexuales"], correct:3,
+  exp:"Las notas la definen como 'Liberación de hormonas sexuales'."},
+ {q:"En los hombres, el proceso hormonal involucra principalmente:",
+  opts:["Óvulos y estrógeno","Tiroxina y calcitonina","Esperma y testosterona","Adrenalina y cortisol"], correct:2,
+  exp:"El pizarrón asocia a los hombres 'Esperma/Testosterona'."},
+ {q:"En las mujeres, el proceso hormonal involucra principalmente:",
+  opts:["Óvulos y estrógeno","Esperma y testosterona","Insulina y glucagón","Melatonina"], correct:0,
+  exp:"El pizarrón asocia a las mujeres 'Óvulos/Estrógeno'."},
+ {q:"¿Qué relación describe correctamente el pizarrón entre estos procesos?",
+  opts:["La gonadarquia no involucra gónadas","No existe relación entre gonadarquia y adrenarquia","La gonadarquia activa las gónadas y la adrenarquia libera hormonas sexuales","La adrenarquia ocurre solo después de la menarquia"], correct:2,
+  exp:"Ambos procesos se presentan juntos como parte de la activación hormonal de la pubertad."}
+]},
+{block:"Nutrición y trastornos alimentarios", questions:[
+ {q:"Según las notas, la nutrición es fundamental para:",
+  opts:["La presión social únicamente","El desarrollo físico y crecimiento saludable","La maduración cognitiva exclusivamente","El desarrollo emocional exclusivamente"], correct:1,
+  exp:"El pizarrón indica que 'la nutrición es fundamental para el desarrollo físico y crecimiento saludable'."},
+ {q:"Los trastornos alimentarios mencionados se dan por afectación de:",
+  opts:["La esfera espiritual","La esfera artística","La esfera biológica","La esfera política"], correct:2,
+  exp:"Se anota: 'se dan estos trastornos por afectación de la esfera biológica'."},
+ {q:"¿Cuál de los siguientes es un trastorno alimentario mencionado en el pizarrón?",
+  opts:["Hipertensión","Asma","Anorexia","Diabetes"], correct:2,
+  exp:"La anorexia aparece listada como factor/trastorno en la sección de nutrición."},
+ {q:"El otro trastorno alimentario mencionado junto a la anorexia es:",
+  opts:["Insomnio","Bulimia","Fobia social","Ansiedad generalizada"], correct:1,
+  exp:"La bulimia aparece junto a la anorexia en la lista de factores."},
+ {q:"Los trastornos por afectación biológica se relacionan, según el esquema, con el apartado de:",
+  opts:["Perspectiva histórica","Nutrición","Teorías de Kohlberg","Adrenarquia"], correct:1,
+  exp:"Esta frase aparece dentro de la sección 'Nutrición y sus factores'."},
+ {q:"¿En qué año se ubica la referencia de Papalia y Martorell sobre obesidad?",
+  opts:["1998","2010","2021","2015"], correct:2,
+  exp:"El pizarrón indica claramente '(2021, sobre Obesidad)'."}
+]},
+{block:"Autores y teorías de la adolescencia", questions:[
+ {q:"¿Qué filósofo antiguo aparece como uno de los autores que abordan la adolescencia?",
+  opts:["Sócrates","Aristóteles","Platón","Confucio"], correct:1,
+  exp:"Aristóteles encabeza la lista de autores en el pizarrón."},
+ {q:"¿Qué autor es reconocido por sus estudios pioneros sobre la adolescencia en la lista del pizarrón?",
+  opts:["Kohlberg","Mauricio Knobel","Stanley Hall","Erick Erikson"], correct:2,
+  exp:"Stanley Hall aparece como uno de los autores clásicos que abordan la adolescencia."},
+ {q:"¿Qué autor vinculado al psicoanálisis aparece en la lista de autores de la adolescencia?",
+  opts:["B.F. Skinner","Lev Vygotsky","Jean Piaget","Sigmund Freud"], correct:3,
+  exp:"Sigmund Freud aparece listado entre los autores que abordan la adolescencia."},
+ {q:"Según Erikson, la adolescencia implica la resolución entre:",
+  opts:["Confianza vs desconfianza","Autonomía vs vergüenza","Identidad vs confusión","Integridad vs desesperación"], correct:2,
+  exp:"Las notas indican 'Erickson: resolución entre identidad vs confusión'."},
+ {q:"Según Piaget, la teoría principal de la adolescencia se basa en:",
+  opts:["Etapa sensoriomotora","Operaciones formales (hipotético-deductivo)","Etapa preoperacional","Operaciones concretas"], correct:1,
+  exp:"Se indica 'Piaget: Operaciones formales (hipotético deductivo)' entre las principales teorías."},
+ {q:"Según Coleman, las teorías de la adolescencia:",
+  opts:["Son universales y fijas","Dependen del individuo","Se basan solo en lo biológico","Se centran solo en lo económico"], correct:1,
+  exp:"Se anota 'Coleman: que dependen del individuo'."}
+]},
+{block:"Perspectiva histórica de la adolescencia", questions:[
+ {q:"En la antigua Grecia, según las notas:",
+  opts:["No existían roles diferenciados","Las mujeres permanecían en casa y los hombres en el poder","Las mujeres gobernaban","Los niños gobernaban"], correct:1,
+  exp:"El pizarrón anota 'Mujeres en casa - Hombres en el poder' para Grecia."},
+ {q:"En la Edad Media se menciona que:",
+  opts:["Existía igualdad salarial","No había trabajo infantil","Se trabajaba sin sueldo y los hombres eran soldados","Las mujeres eran soldados"], correct:2,
+  exp:"El pizarrón indica 'Trabajo sin sueldo - Hombres soldados' para la Edad Media."},
+ {q:"En la antigua Roma, según las notas, los niños:",
+  opts:["Iban a la universidad","Realizaban rituales para la adolescencia","Eran excluidos de la sociedad","No tenían ninguna ceremonia"], correct:1,
+  exp:"Se indica 'Niños realizan rituales para adolescencia' en la época de Roma."},
+ {q:"El Renacimiento se asocia, según el pizarrón, con:",
+  opts:["Pensamiento exclusivamente religioso","Pensamiento mágico","Pensamiento crítico y humanista","Ausencia de pensamiento crítico"], correct:2,
+  exp:"Se anota 'Pensamiento crítico y Humanista' para el Renacimiento."},
+ {q:"¿En qué época histórica se ubica 'mujeres en casa, hombres en el poder'?",
+  opts:["Renacimiento","Edad Media","Grecia","Revolución Industrial"], correct:2,
+  exp:"Esta descripción corresponde a la Grecia antigua según el pizarrón."},
+ {q:"¿En qué época se menciona 'trabajo sin sueldo, hombres soldados'?",
+  opts:["Roma","Grecia","Edad Media","Renacimiento"], correct:2,
+  exp:"Esta frase aparece bajo el apartado de la Edad Media."},
+ {q:"¿Qué periodo histórico se vincula con 'niños realizan rituales para adolescencia'?",
+  opts:["Edad Media","Grecia","Roma","Renacimiento"], correct:2,
+  exp:"Esta característica se ubica bajo el apartado de Roma en el pizarrón."}
+]},
+{block:"Etapas de la adolescencia", questions:[
+ {q:"La adolescencia temprana abarca, según el pizarrón:",
+  opts:["18 a 21 años","8 a 9 años","10 a 13 años","14 a 17 años"], correct:2,
+  exp:"Las notas indican 'Adolescencia Temprana: 10 a 13 años'."},
+ {q:"En la adolescencia temprana ocurre principalmente:",
+  opts:["El control total de impulsos","El comienzo de cambios físicos","La madurez reproductiva completa","La estabilidad emocional total"], correct:1,
+  exp:"Se indica 'Comienzan cambios físicos' en la adolescencia temprana."},
+ {q:"La adolescencia media abarca, según el pizarrón:",
+  opts:["10 a 13 años","18 a 21 años","22 a 25 años","14 a 17 años"], correct:3,
+  exp:"Las notas indican 'Adolescencia Media: 14 a 17 años'."},
+ {q:"La adolescencia media se caracteriza, según las notas, por:",
+  opts:["La ausencia de cambios físicos","La influencia y presión de amigos","El aislamiento social total","La independencia económica total"], correct:1,
+  exp:"Se indica 'Influencia y presión de amigos' en la adolescencia media."},
+ {q:"En la adolescencia tardía predomina, según las notas:",
+  opts:["El inicio de los cambios físicos","La dependencia total de los padres","La ausencia de identidad","El control de impulsos y la estabilidad emocional"], correct:3,
+  exp:"Se indica 'Control de impulsos y estabilidad emocional' en la adolescencia tardía."},
+ {q:"¿Cuál etapa de la adolescencia coincide con mayor presión de pares según las notas?",
+  opts:["Adolescencia tardía","Adolescencia temprana","Adolescencia media","Ninguna de las anteriores"], correct:2,
+  exp:"La 'influencia y presión de amigos' se asocia específicamente a la adolescencia media."},
+ {q:"Ordenando cronológicamente, ¿cuál es la secuencia correcta de las etapas de la adolescencia?",
+  opts:["Tardía, Media, Temprana","Media, Temprana, Tardía","Tardía, Temprana, Media","Temprana, Media, Tardía"], correct:3,
+  exp:"El orden correcto es: Temprana (10-13), Media (14-17), Tardía (18-21)."}
+]}
+];
+
+// Flatten with global indices
+let flat = [];
+data.forEach((b, bi) => b.questions.forEach((q, qi) => flat.push({...q, blockIndex:bi, blockName:b.block, qi})));
+
+let state = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+if(!state || !Array.isArray(state.answers) || state.answers.length !== flat.length){
+  state = { answers: new Array(flat.length).fill(null), theme: state?.theme || "dark" };
+}
+
+function save(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+function applyTheme(){
+  document.body.classList.toggle("light", state.theme === "light");
+}
+
+function renderNav(){
+  const nav = document.getElementById("blockNav");
+  nav.innerHTML = "";
+  data.forEach((b, bi) => {
+    const btn = document.createElement("button");
+    btn.textContent = (bi+1) + ". " + b.block.split(" (")[0].split(":")[0];
+    btn.title = b.block;
+    btn.onclick = () => {
+      document.getElementById("block-" + bi).scrollIntoView({behavior:"smooth", block:"start"});
+    };
+    nav.appendChild(btn);
+  });
+}
+
+function renderMain(){
+  const main = document.getElementById("main");
+  main.innerHTML = "";
+  data.forEach((b, bi) => {
+    const h = document.createElement("div");
+    h.className = "block-title";
+    h.id = "block-" + bi;
+    h.textContent = "Bloque " + (bi+1) + ": " + b.block;
+    main.appendChild(h);
+
+    b.questions.forEach((q, qi) => {
+      const globalIndex = flat.findIndex(f => f.blockIndex===bi && f.qi===qi);
+      const card = document.createElement("div");
+      card.className = "qcard";
+      const num = document.createElement("div");
+      num.className = "qnum";
+      num.textContent = "Pregunta " + (globalIndex+1) + " de " + flat.length;
+      card.appendChild(num);
+
+      const qt = document.createElement("div");
+      qt.className = "qtext";
+      qt.textContent = q.q;
+      card.appendChild(qt);
+
+      const optsWrap = document.createElement("div");
+      q.opts.forEach((optText, oi) => {
+        const optBtn = document.createElement("button");
+        optBtn.className = "opt";
+        optBtn.textContent = String.fromCharCode(65+oi) + ". " + optText;
+        optBtn.onclick = () => answer(globalIndex, oi, card);
+        optsWrap.appendChild(optBtn);
+      });
+      card.appendChild(optsWrap);
+
+      const exp = document.createElement("div");
+      exp.className = "explain";
+      exp.textContent = "💡 " + q.exp;
+      card.appendChild(exp);
+
+      main.appendChild(card);
+
+      // restore state
+      if(state.answers[globalIndex] !== null){
+        lockCard(card, q, state.answers[globalIndex]);
+      }
+    });
+  });
+}
+
+function lockCard(card, q, chosenIndex){
+  const btns = card.querySelectorAll(".opt");
+  btns.forEach((b, i) => {
+    b.disabled = true;
+    if(i === q.correct) b.classList.add("correct");
+    else if(i === chosenIndex) b.classList.add("incorrect");
+  });
+  card.querySelector(".explain").classList.add("show");
+}
+
+function answer(globalIndex, chosenIndex, card){
+  if(state.answers[globalIndex] !== null) return;
+  state.answers[globalIndex] = chosenIndex;
+  save();
+  lockCard(card, flat[globalIndex], chosenIndex);
+  updateStats();
+}
+
+function updateStats(){
+  const total = flat.length;
+  const answered = state.answers.filter(a => a !== null).length;
+  const correct = state.answers.filter((a,i) => a !== null && a === flat[i].correct).length;
+  const incorrect = answered - correct;
+  document.getElementById("totalCount").textContent = total;
+  document.getElementById("answeredCount").textContent = answered;
+  document.getElementById("correctCount").textContent = correct;
+  document.getElementById("incorrectCount").textContent = incorrect;
+  const pct = total ? Math.round((answered/total)*100) : 0;
+  document.getElementById("progressBar").style.width = pct + "%";
+  document.getElementById("footerPct").textContent = pct + "% completado" + (answered===total ? (" · " + correct + "/" + total + " correctas (" + Math.round(correct/total*100) + "%)") : "");
+}
+
+document.getElementById("toggleTheme").onclick = () => {
+  state.theme = state.theme === "light" ? "dark" : "light";
+  save();
+  applyTheme();
+};
+
+document.getElementById("restartBtn").onclick = () => {
+  if(confirm("¿Seguro que quieres reiniciar el quiz? Se borrará todo tu progreso guardado.")){
+    state.answers = new Array(flat.length).fill(null);
+    save();
+    renderMain();
+    updateStats();
+    window.scrollTo({top:0, behavior:"smooth"});
+  }
+};
+
+applyTheme();
+renderNav();
+renderMain();
+updateStats();
+</script>
+<footer class="site-footer">
+    © <span id="footerYear"></span> A. A. DURAND. Todos los derechos reservados.
+  </footer>
+</body>
+</html>
